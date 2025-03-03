@@ -1,10 +1,14 @@
+import asyncio
 from .key import Key
 
-class KeyHandler:
+class KeyHandlerBase:
     def __init__(self, api_keys, client):
-        self.keys = [Key(key, client, i) for i, key in enumerate(api_keys)]
-        #self.clients = [client(api_key=key.key) for key in keys]
+        pass
 
+class KeyHandler(KeyHandlerBase):
+    def __init__(self, api_keys, client, verbose=False):
+        self.keys = [Key(key, client, i) for i, key in enumerate(api_keys)]
+        self.verbose = verbose
         self.metrics = {
             "tpm": lambda key: key.get_tpm(),
             "rps": lambda key: key.get_rpm(),
@@ -30,18 +34,25 @@ class KeyHandler:
         return key
 
 class AsyncKeyHandler(KeyHandler):
+    def __init__(self, api_keys, client, **kwargs):
+        super().__init__(api_keys, client, kwargs)
+        self.keys = [AsyncKey(key, client, i) for i, key in enumerate(api_keys)]
+
     async def request(self, *args, **kwargs):
         key = await self.get_lazy_key()  # Async call to get a key
         response = await key.client.chat.completions.create(*args, **kwargs)  # Awaiting async call
         tokens = response.usage.total_tokens
         await key.log_request(tokens)
-        print(f"Used key {key.key} with {tokens} tokens.")
+        if self.verbose:
+            print(f"Used key {key.idx} for {tokens} tokens.")
         return response
     
     async def get_lazy_key(self, metric="tpm"):
         assert metric in self.metrics.keys(), f"Availabel metrics: {list(self.metrics.keys())}."
         assert metric not in ["tpd", "rpd"], f"Method \"{metric}\" is not yet implemented."
         
-        key = min(self.keys, key=self.metrics[metric])
+        tasks = [self.metrics[metric](key) for key in self.keys]
+        metric_values = await asyncio.gather(*tasks)
+        key = min(zip(self.keys, metric_values), key=lambda x: x[1])[0]
         
         return key
