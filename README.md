@@ -12,6 +12,7 @@ Lazy Key is a Python-based utility designed to efficiently manage multiple API k
 
 # Quickstart
 
+Sync version
 ```python
 from lazykey import KeyHandler
 from groq import Groq
@@ -32,8 +33,7 @@ completion = api.request(
 )
 ```
 
-For the async version:
-
+Async version:
 ```python
 from lazykey import AsyncKeyHandler
 from groq import AsyncGroq
