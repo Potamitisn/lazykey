@@ -1,5 +1,5 @@
 
-(definitely not ai generated generic project description that will be updated in the future)\
+(definitely not ai generated generic project description that will be updated in the future)
 
 Lazy Key is a Python-based utility designed to efficiently manage multiple API keys while ensuring optimal usage and load balancing. Built with asyncio, the system dynamically selects the best available key based on predefined rate-limiting metrics such as tokens per minute (TPM) and requests per second (RPS).
 
@@ -41,9 +41,9 @@ from groq import AsyncGroq
 api_keys = ["API_KEY_1", "API_KEY_2"]
 client = AsyncGroq
 
-api = await AsyncKeyHandler(api_keys, client)
+api = AsyncKeyHandler(api_keys, client)
 
-completion = api.request(
+completion = await api.request(
     messages=[
         {
             "role": "user",
