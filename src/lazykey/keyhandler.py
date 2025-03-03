@@ -1,5 +1,5 @@
 import asyncio
-from .key import Key
+from .key import Key, AsyncKey
 
 class KeyHandlerBase:
     def __init__(self, api_keys, client):

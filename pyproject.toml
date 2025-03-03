@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lazykey"
-version = "0.0.4"
+version = "0.0.7"
 authors = [
   { name="Nearchos Potamitis", email="nearchos.potamitis@cs.au.dk" },
 ]
